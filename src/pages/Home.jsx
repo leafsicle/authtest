@@ -1,20 +1,28 @@
 import React, { Component } from 'react'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
-import Auth from '../Auth/auth.js'
-const auth = new Auth()
 
 class Home extends Component {
 	login = () => {
-		auth.login()
+		this.props.auth.login()
 	}
 	logout = () => {
-		auth.logout()
+		this.props.auth.logout()
 	}
+
+	componentDidMount() {
+		//see if the user is logged in
+		//if logged in then display the user's name
+		if (this.props.auth.isAuthenticated) {
+			this.props.auth.getUserProfile()
+		}
+	}
+
 	render() {
 		return (
 			<div>
+				hello
 				<button onClick={this.login}>Log In?</button>
-				<button onClick={this.login}>Logout</button>
+				<button onClick={this.logout}>Logout</button>
 			</div>
 		)
 	}

@@ -4,20 +4,23 @@ import auth0 from 'auth0-js'
 import history from '../history'
 
 export default class Auth {
+	userProfile
+
 	constructor() {
 		this.login = this.login.bind(this)
 		this.logout = this.logout.bind(this)
 		this.handleAuthentication = this.handleAuthentication.bind(this)
 		this.isAuthenticated = this.isAuthenticated.bind(this)
+		this.getProfile = this.getProfile.bind(this)
 	}
 
 	handleAuthentication() {
 		this.auth0.parseHash((err, authResult) => {
 			if (authResult && authResult.accessToken && authResult.idToken) {
 				this.setSession(authResult)
-				history.replace('/home')
+				history.replace('/')
 			} else if (err) {
-				history.replace('/home')
+				history.replace('/')
 				console.log(err)
 			}
 		})
@@ -32,7 +35,7 @@ export default class Auth {
 		localStorage.setItem('id_token', authResult.idToken)
 		localStorage.setItem('expires_at', expiresAt)
 		// navigate to the home route
-		history.replace('/home')
+		history.replace('/')
 	}
 
 	logout() {
@@ -41,7 +44,7 @@ export default class Auth {
 		localStorage.removeItem('id_token')
 		localStorage.removeItem('expires_at')
 		// navigate to the home route
-		history.replace('/home')
+		history.replace('/')
 	}
 
 	isAuthenticated() {
@@ -56,10 +59,27 @@ export default class Auth {
 		clientID: '0yFqqt5WLHo5t8JCwUYzGbZ9H3MB7RHx',
 		redirectUri: 'http://localhost:3000/callback',
 		responseType: 'token id_token',
-		scope: 'openid'
+		scope: 'profile'
 	})
 
 	login() {
 		this.auth0.authorize()
+	}
+	getAccessToken() {
+		const accessToken = localStorage.getItem('access_token')
+		if (!accessToken) {
+			throw new Error('No Access Token found')
+		}
+		return accessToken
+	}
+
+	getProfile(cb) {
+		let accessToken = this.getAccessToken()
+		this.auth0.client.userInfo(accessToken, (err, profile) => {
+			if (profile) {
+				this.userProfile = profile
+			}
+			cb(err, profile)
+		})
 	}
 }

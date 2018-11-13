@@ -2,8 +2,9 @@ import React, { Component } from 'react'
 
 import { Router, Route, Switch } from 'react-router-dom'
 
-import Home from '../Pages/Home'
-import Callback from '../Pages/Callback'
+// import './App.css'
+import Home from './Pages/Home'
+import Callback from './Pages/Callback'
 
 import Auth from './Auth/auth'
 import history from './history'
@@ -21,8 +22,13 @@ class App extends Component {
 		return (
 			<Router history={history} component={App}>
 				<Switch>
-					<Route path="/" render={props => <Home auth={auth} {...props} />} />
 					<Route
+						exact
+						path="/"
+						render={props => <Home auth={auth} {...props} />}
+					/>
+					<Route
+						exact
 						path="/callback"
 						render={props => {
 							handleAuthentication(props)
